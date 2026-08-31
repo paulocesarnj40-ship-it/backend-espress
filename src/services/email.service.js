@@ -2,7 +2,7 @@ import nodemailer from "nodemailer";
 import { getWelcomeEmailTemplate } from "../templates/email.templates.js";
 
 // Configuração do cliente SMTP
-const transporter = nodemailer.createTransport({
+const transport = nodemailer.createTransport({
   host: process.env.MAIL_HOST || "smtp.mailtrap.io",
   port: Number(process.env.MAIL_PORT) || 2525,
   auth: {
@@ -35,5 +35,5 @@ export async function sendVerificationEmail({ to, userName, token }) {
     html: htmlContent,
   };
 
-  await transporter.sendMail(mailOptions);
+  await transport.sendMail(mailOptions);
 }

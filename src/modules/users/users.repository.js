@@ -4,20 +4,21 @@ export class UsersRepository {
   /**
    * Cria um novo usuário no banco de dados.
    */
-  async create({ name, email, password }) {
+  // 1. CORREÇÃO: Adicionado isVerified na desestruturação
+  async create({ name, email, password, isVerified = false }) {
     const user = await prisma.user.create({
       data: {
         name,
         email,
-        password, // A senha deve vir tratada/criptografada antes de chamar o repositório
-        isVerified, // Salva o status de verificação
+        password,
+        isVerified, // Agora a variável existe no escopo!
       },
       select: {
         id: true,
         name: true,
         email: true,
-        createdAt: true
-        // Omitimos a senha no retorno por segurança
+        isVerified: true, // 2. CORREÇÃO: Selecionado para retornar à controller
+        createdAt: true,
       },
     });
 
@@ -26,8 +27,6 @@ export class UsersRepository {
 
   /**
    * Busca um usuário pelo e-mail.
-   * Retorna o usuário completo (incluindo o hash da senha para verificação posterior)
-   * ou null caso não encontre.
    */
   async findByEmail(email) {
     const user = await prisma.user.findUnique({
@@ -35,5 +34,15 @@ export class UsersRepository {
     });
 
     return user;
+  }
+
+  /**
+   * Atualiza o status do e-mail do usuário para verificado.
+   */
+  async verifyUserEmail(id) {
+    return await prisma.user.update({
+      where: { id },
+      data: { isVerified: true },
+    });
   }
 }
