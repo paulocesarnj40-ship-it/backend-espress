@@ -91,7 +91,7 @@ try {
       return res.status(500).json({ error: "Erro interno do servidor." });
     }
   };
-
+// Envio de email funccionando
   loginUser = async (req, res) => {
     try {
       const { email, password } = loginUserSchema.parse(req.body);

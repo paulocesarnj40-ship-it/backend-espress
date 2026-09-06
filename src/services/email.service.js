@@ -1,3 +1,4 @@
+//import "dotenv/config";
 import nodemailer from "nodemailer";
 import { getWelcomeEmailTemplate } from "../templates/email.templates.js";
 
@@ -20,7 +21,7 @@ const transport = nodemailer.createTransport({
  */
 export async function sendVerificationEmail({ to, userName, token }) {
   const appUrl = process.env.APP_URL || "http://localhost:3000";
-  const verificationLink = `${appUrl}/users/confirmar-email?token=${token}`;
+  const verificationLink = `${appUrl}/api/user/confirmar-email?token=${token}`;
 
   // Gera o código HTML chamando a camada de template
   const htmlContent = getWelcomeEmailTemplate({
