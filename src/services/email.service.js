@@ -1,4 +1,3 @@
-//import "dotenv/config";
 import nodemailer from "nodemailer";
 import { getWelcomeEmailTemplate } from "../templates/email.templates.js";
 
