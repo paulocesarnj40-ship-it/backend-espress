@@ -2,7 +2,7 @@ import nodemailer from "nodemailer";
 import { getWelcomeEmailTemplate } from "../templates/email.templates.js";
 
 // Configuração do cliente SMTP
-const transporter = nodemailer.createTransport({
+const transport = nodemailer.createTransport({
   host: process.env.MAIL_HOST || "smtp.mailtrap.io",
   port: Number(process.env.MAIL_PORT) || 2525,
   auth: {
@@ -20,7 +20,7 @@ const transporter = nodemailer.createTransport({
  */
 export async function sendVerificationEmail({ to, userName, token }) {
   const appUrl = process.env.APP_URL || "http://localhost:3000";
-  const verificationLink = `${appUrl}/users/confirmar-email?token=${token}`;
+  const verificationLink = `${appUrl}/api/user/confirmar-email?token=${token}`;
 
   // Gera o código HTML chamando a camada de template
   const htmlContent = getWelcomeEmailTemplate({
@@ -35,5 +35,5 @@ export async function sendVerificationEmail({ to, userName, token }) {
     html: htmlContent,
   };
 
-  await transporter.sendMail(mailOptions);
+  await transport.sendMail(mailOptions);
 }

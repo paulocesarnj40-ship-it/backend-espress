@@ -1,4 +1,3 @@
-import 'dotenv/config';
 import { Router } from 'express';
 
 import {UserController} from './users.controller.js'
@@ -9,7 +8,9 @@ const userController  = new UserController ;
 
 // Rotas públicas
 router.post('/cadastro', (req, res) => userController.createUser(req, res));
+router.get('/confirmar-email', (req, res) => userController.confirmEmail(req, res));
 router.post('/login', (req, res) => userController.loginUser(req, res));
+
 
 
 //Rota protegida por autenticação JWT
