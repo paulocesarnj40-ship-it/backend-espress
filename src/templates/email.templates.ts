@@ -1,11 +1,15 @@
+interface WelcomeEmailTemplateParams {
+  userName: string;
+  verificationLink: string;
+}
+
 /**
  * Retorna o HTML do e-mail de verificação de cadastro.
- * @param {Object} params
- * @param {string} params.userName - Nome do usuário cadastrado.
- * @param {string} params.verificationLink - URL completa de confirmação com o token JWT.
- * @returns {string} String contendo o HTML e CSS inline.
  */
-export function getWelcomeEmailTemplate({ userName, verificationLink }) {
+export function getWelcomeEmailTemplate({
+  userName,
+  verificationLink,
+}: WelcomeEmailTemplateParams): string {
   return `
     <!DOCTYPE html>
     <html lang="pt-BR">

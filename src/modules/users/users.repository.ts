@@ -1,23 +1,31 @@
-import { prisma } from "../../lib/prisma.js";
+import { User } from '../../generated/prisma/client/edge.js';
+import { prisma } from '../../lib/prisma.js';
+
+// Interface para os dados de criação de usuário
+export interface CreateUserInput {
+  name: string;
+  email: string;
+  password: string;
+  isVerified?: boolean;
+}
 
 export class UsersRepository {
   /**
    * Cria um novo usuário no banco de dados.
    */
-  // 1. CORREÇÃO: Adicionado isVerified na desestruturação
-  async create({ name, email, password, isVerified = false }) {
+  async create({ name, email, password, isVerified = false }: CreateUserInput) {
     const user = await prisma.user.create({
       data: {
         name,
         email,
         password,
-        isVerified, // Agora a variável existe no escopo!
+        isVerified,
       },
       select: {
         id: true,
         name: true,
         email: true,
-        isVerified: true, // 2. CORREÇÃO: Selecionado para retornar à controller
+        isVerified: true,
         createdAt: true,
       },
     });
@@ -28,7 +36,7 @@ export class UsersRepository {
   /**
    * Busca um usuário pelo e-mail.
    */
-  async findByEmail(email) {
+  async findByEmail(email: string) {
     const user = await prisma.user.findUnique({
       where: { email },
     });
@@ -39,10 +47,16 @@ export class UsersRepository {
   /**
    * Atualiza o status do e-mail do usuário para verificado.
    */
-  async verifyUserEmail(id) {
+  async verifyUserEmail(id: number) {
     return await prisma.user.update({
       where: { id },
       data: { isVerified: true },
+    });
+  }
+
+  async deleteById(id: number): Promise<User> {
+    return prisma.user.delete({
+      where: { id },
     });
   }
 }

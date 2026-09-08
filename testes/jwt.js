@@ -1,7 +1,7 @@
-import jwt from "jsonwebtoken";
+import jwt from 'jsonwebtoken';
 
-const JWT_SECRET = process.env.JWT_SECRET || "sua_chave_secreta_padrao";
-const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || "1d";
+const JWT_SECRET = process.env.JWT_SECRET || 'sua_chave_secreta_padrao';
+const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '1d';
 
 /**
  * Gera um token JWT assinado.
