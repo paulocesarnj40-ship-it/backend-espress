@@ -1,12 +1,17 @@
 import { Request, Response } from 'express';
 import { ZodError } from 'zod';
 
-import { sendVerificationEmail } from '../../services/email.service.js';
+import {
+  sendVerificationEmail,
+  sendPasswordResetEmail,
+} from '../../services/email.service.js';
 import { HashService } from '../../services/hash.services.js';
 import { generateToken, verifyToken } from '../../utils/jwt.utils.js';
 import {
   CreateUserBodyInput,
   createUserBodySchema,
+  ForgotPasswordBodyInput,
+  forgotPasswordBodySchema,
   LoginUserBodyInput,
   loginUserBodySchema,
 } from './user.schemas.js';
@@ -283,6 +288,39 @@ export class UserController {
       return res
         .status(500)
         .json({ error: 'Erro ao reenviar o e-mail de verificação.' });
+    }
+  };
+
+  forgotPassword = async (
+    req: Request<{}, {}, ForgotPasswordBodyInput>,
+    res: Response,
+  ): Promise<Response> => {
+    try {
+      const { email } = forgotPasswordBodySchema.parse(req.body);
+      const user = await this.usersRepository.findByEmail(email);
+
+      if (user) {
+        const resetToken = generateToken({
+          id: user.id,
+          email: user.email,
+          purpose: 'password_reset',
+        });
+        await sendPasswordResetEmail({
+          to: user.email,
+          userName: user.name,
+          token: resetToken,
+        });
+      }
+
+      return res.status(200).json({
+        message:
+          'Se o e-mail estiver cadastrado, enviaremos instruções para redefinir sua senha.',
+      });
+    } catch (error) {
+      console.error('❌ [UserController.forgotPassword]:', error);
+      return res.status(500).json({
+        error: 'Erro ao processar a solicitação de recuperação de senha.',
+      });
     }
   };
 }

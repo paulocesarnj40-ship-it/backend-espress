@@ -1,6 +1,9 @@
 // @ts-expect-error The project does not include nodemailer's type declarations.
 import nodemailer, { Transporter } from 'nodemailer';
-import { getWelcomeEmailTemplate } from '../templates/email.templates.js';
+import {
+  getForgotPasswordEmailTemplate,
+  getWelcomeEmailTemplate,
+} from '../templates/email.templates.js';
 
 interface SendVerificationEmailParams {
   to: string;
@@ -8,6 +11,11 @@ interface SendVerificationEmailParams {
   token: string;
 }
 
+interface SendPasswordResetEmailParams {
+  to: string;
+  userName: string;
+  token: string;
+}
 // Configuração do cliente SMTP
 const transport: Transporter = nodemailer.createTransport({
   host: process.env.MAIL_HOST || 'smtp.mailtrap.io',
@@ -41,6 +49,31 @@ export async function sendVerificationEmail({
       '"Minha Aplicação" <no-reply@minhaaplicacao.com>',
     to,
     subject: 'Confirme seu e-mail para ativar sua conta',
+    html: htmlContent,
+  };
+
+  await transport.sendMail(mailOptions);
+}
+
+export async function sendPasswordResetEmail({
+  to,
+  userName,
+  token,
+}: SendPasswordResetEmailParams): Promise<void> {
+  const appUrl: string = process.env.APP_URL || 'http://localhost:3000';
+  const resetLink: string = `${appUrl}/api/user/redefinir-senha?token=${token}`;
+
+  const htmlContent: string = getForgotPasswordEmailTemplate({
+    userName,
+    resetLink: resetLink,
+  });
+
+  const mailOptions: nodemailer.SendMailOptions = {
+    from:
+      process.env.MAIL_FROM ||
+      '"Minha Aplicação" <no-reply@minhaaplicacao.com>',
+    to,
+    subject: 'Redefinir senha',
     html: htmlContent,
   };
 

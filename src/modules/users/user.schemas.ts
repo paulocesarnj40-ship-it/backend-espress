@@ -8,12 +8,16 @@ import { z } from 'zod';
 export const createUserBodySchema = z.object({
   name: z
     .string({ error: 'O nome é obrigatório' })
-    .trim()
     .min(3, { message: 'O nome deve ter no mínimo 3 caracteres' }),
 
   email: z
     .string({ error: 'O e-mail é obrigatório' })
-    .email({ message: 'Formato do e-mail é inválido' }),
+    .trim()
+    .toLowerCase()
+    .regex(
+      /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+      'Formato do e-mail é inválido.',
+    ),
 
   password: z
     .string({ error: 'A senha é obrigatória' })
@@ -25,7 +29,11 @@ export const createUserBodySchema = z.object({
 export const loginUserBodySchema = z.object({
   email: z
     .string({ error: 'O e-mail é obrigatório' })
-    .email({ message: 'O formato do e-mail é inválido' }),
+    .trim()
+    .regex(
+      /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+      'Formato de e-mail inválido',
+    ),
 
   password: z
     .string({ error: 'A senha é obrigatória' })
@@ -37,23 +45,49 @@ export const loginUserBodySchema = z.object({
 export const resendVerificationBodySchema = z.object({
   email: z
     .string({ error: 'O e-mail é obrigatório' })
-    .email({ message: 'Formato de e-mail inválido' }),
+    .regex(
+      /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+      'Formato de e-mail inválido',
+    ),
 });
 
-// ==========================================
-// Schemas para o Middleware de Validação (Com objeto 'body')
-// ==========================================
+export const forgotPasswordBodySchema = z.object({
+  email: z
+    .string({ error: 'O e-mail é obrigatório' })
+    .trim()
+    .toLowerCase()
+    .regex(
+      /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+      'Formato de e-mail inválido',
+    ),
+});
 
-//export const createUserSchema = z.object({
-//  body: createUserBodySchema,
-//});
+export const resetPasswordBodySchema = z.object({
+  token: z.string({ error: 'O token é obrigatório' }).trim(),
+  newPassword: z
+    .string({ error: 'A nova senha é obrigatória' })
+    .trim()
+    .min(6, { message: 'A nova senha deve ter no mínimo 6 caracteres' }),
+});
 
-//export const loginUserSchema = z.object({
-// body: loginUserBodySchema,
-//});
+export const confirmEmailBodySchema = z.object({
+  email: z
+    .string({ error: 'O e-mail é obrigatório' })
+    .trim()
+    .toLowerCase()
+    .regex(
+      /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+      'Formato de e-mail inválido',
+    ),
+});
 
+export const GetProfileQuerySchema = z.object({
+  token: z.string({ error: 'O token é obrigatório' }).trim(),
+}); 
 // ==========================================
-// Inferência de Tipos TypeScript
+// Schemas Completos (Body + Query + Params)
+// ==========================================
+// Tipos derivados dos Schemas
 // ==========================================
 
 export type CreateUserBodyInput = z.infer<typeof createUserBodySchema>;
@@ -61,3 +95,7 @@ export type LoginUserBodyInput = z.infer<typeof loginUserBodySchema>;
 export type ResendVerificationBodyInput = z.infer<
   typeof resendVerificationBodySchema
 >;
+export type ResetPasswordBodyInput = z.infer<typeof resetPasswordBodySchema>;
+export type ForgotPasswordBodyInput = z.infer<typeof forgotPasswordBodySchema>;
+export type ConfirmEmailBodyInput = z.infer<typeof confirmEmailBodySchema>;
+export type GetProfileQueryInput = z.infer<typeof GetProfileQuerySchema>;

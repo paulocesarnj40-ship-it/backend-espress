@@ -1,5 +1,6 @@
 import { User } from '../../generated/prisma/client/edge.js';
 import { prisma } from '../../lib/prisma.js';
+import { verifyToken } from '../../utils/jwt.utils.js';
 
 // Interface para os dados de criação de usuário
 export interface CreateUserInput {
@@ -10,6 +11,27 @@ export interface CreateUserInput {
 }
 
 export class UsersRepository {
+  async findByToken(token: string) {
+    try {
+      const decoded = verifyToken<{ id: string; email: string }>(token);
+
+      if (!decoded?.id) {
+        return null;
+      }
+
+      const id = Number(decoded.id);
+
+      if (!Number.isInteger(id)) {
+        return null;
+      }
+
+      return await prisma.user.findUnique({
+        where: { id },
+      });
+    } catch {
+      return null;
+    }
+  }
   /**
    * Cria um novo usuário no banco de dados.
    */
