@@ -9,6 +9,7 @@ export interface TokenPayload {
 
 /**
  * Middleware para autenticação via JWT.
+ * teste
  */
 export function authMiddleware(
   req: Request,
